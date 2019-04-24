@@ -2,10 +2,10 @@ const https = require('https');
 
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;  
 const csvWriter = createCsvWriter({  
-  path: 'out_assetapi.csv'
+  path: 'out_assetapi_tc.csv'
 });
 
-collections = [{"id":"8526419","details":"children"},
+/*collections = [{"id":"8526419","details":"children"},
 {"collections":"8097792","details":"all","page_size":"450","orderby":"display_name+asc"},
 {"id":"8805558","details":"children"},
 {"collections":"167019455","details":"all","orderby":"display_name+asc","page_size":"350"},
@@ -42,7 +42,16 @@ collections = [{"id":"8526419","details":"children"},
 {"id":"16347175","details":"children"},
 {"id":"12344752","details":"children"},
 {"id":"8106566","details":"children"},
-{"collections":"71828227","details":"all","orderby":"display_name+asc"}];
+{"collections":"71828227","details":"all","orderby":"display_name+asc"}];*/
+
+collections = [
+	{"id":"203991828","details":"children"},
+	{"id":"203991730","details":"children"},
+	{"id":"203991581","details":"children"},
+	{"id":"203991737","details":"children"},
+	{"id":"203991728","details":"children"},
+	{"id":"203991493","details":"children"},
+]
 
 array_csv = [];
 
@@ -85,7 +94,19 @@ function process_assetapi(collection_id, data, callback) {
 	var assets = data.results;
 
 	for(var i = 0; i < assets.length; i++) {
-		var asset = [collection_id, assets[i].id, assets[i].name,assets[i].type, assets[i].display_name, assets[i].parents, (assets[i].type == 'series' ? assets[i].children : 'NA')];
+		var parents = "";
+		if(assets[i].parents) {
+			for(var j=0; j < assets[i].parents.length; j++) {
+				parents += ", " + assets[i].parents[j].type + "(" +assets[i].parents[j].name+ ")";
+			}
+		}
+		var collections = "";
+		if(assets[i].collections) {
+			for(var j=0; j < assets[i].collections.length; j++) {
+				collections += ", " + assets[i].collections[j].display_name + "(" +assets[i].collections[j].id+ ")";
+			}
+		}
+		var asset = [collection_id, assets[i].id, assets[i].name,assets[i].type, assets[i].display_name, parents, collections, (assets[i].type == 'series' ? assets[i].children : 'NA')];
 		
 		ret.push(asset);
 		

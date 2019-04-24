@@ -2,19 +2,28 @@ const fs = require('fs')
 xml2js = require('xml2js')
 var parser = new xml2js.Parser();
 
-const xml_file = '/Production_Catalog_InternetTV.xml'
+const input_xml_file = '/testcase2.09.xml'
+
+// 
+const node_index = 0; // 1: Movies | 2: TV Series | 3: On Demand Channels | 4: InternetTV
+const output_csv_file = 'out_tc09.csv'
 
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;  
 const csvWriter = createCsvWriter({  
-  path: 'out_InternetTV_b4_2nd_migration.csv'
+  path: output_csv_file
 });
 
-
-
 try {
-	fs.readFile(__dirname + xml_file, function(err, data) {
-		parser.parseString(data, function (err, result) {
-			parse(result, function(ret) {
+	fs.readFile(__dirname + input_xml_file, function(err, data) {
+		parser.parseString(data, function (err, result_json) {
+			console.log(result_json.ScheduleProvider.Catalogue);
+			console.log(result_json.ScheduleProvider.Catalogue[0].Node);
+			console.log(result_json.ScheduleProvider.Catalogue[0].Node.length);
+			console.log(result_json.ScheduleProvider.Catalogue[0].Node[0].Node);
+
+
+			var node_json = result_json.ScheduleProvider.Catalogue[0].Node[0].Node[node_index];
+			parse(node_json, function(ret) {
 			  csvWriter  
 			  .writeRecords(ret)
 			  .then(()=> console.log('The CSV file was written successfully'));
@@ -46,7 +55,7 @@ function get_ImageSize(EpgDescription) {
 function parse(data, callback) {
 
 	var ret = [] ;
-	var nodes_lv3 = data.Node.Node;
+	var nodes_lv3 = data.Node;
  
   for(var i = 0; i < nodes_lv3.length; i++) {
 	  var node_lv3 = nodes_lv3[i];
